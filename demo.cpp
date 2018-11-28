@@ -2,31 +2,46 @@
 #include <opencv2/opencv.hpp>
 #include <opencv2/viz/vizcore.hpp>
 
+IplImage *loadAndShowImage (const char *filename,
+    const int isColor,
+    const char *window,
+    const int x, const int y) {
+    // Load image from file
+    IplImage *img = cvLoadImage( filename, isColor);
+    if (img == 0 ){
+        std::cerr << "ERROR: could not load image from:  " << std::endl << filename << std::endl;
+        return 0;
+    }
+    std::cout << "read in image from : " << std::endl << filename << std::endl;
+
+    cvNamedWindow(window, CV_WINDOW_AUTOSIZE );
+    cvMoveWindow( window, x, y );
+    cvShowImage( window, img );
+
+    return img;
+}
+
+const char *getFilename (int argn, char *arg[], const int  ix, const char *file) {
+    if(argn <= ix ){
+        return file;
+    } else {
+        return arg[ix];
+    }
+}
+
 
 int main ( int argn, char *argv[]  ) {
     std::cout << std::endl << "Hi this is " << __FILE__ << "." << std::endl;
-
-    
-    // Load image in same format as stored
-    const char *fileIn = "../data/test.png";
-    const int colorMode = CV_LOAD_IMAGE_UNCHANGED;
-    IplImage *img = cvLoadImage( fileIn, colorMode);
-    if(img == 0) {
-        std::cerr << "ERROR: could not be read:" << fileIn << std::endl ;
-        return 1;
-    }
-    std::cout << "read in image from : " << fileIn << std::endl;
-    // create window and move it to upper left corner (0, 0)
     const char *window = "image";
-    cvNamedWindow( window, CV_WINDOW_AUTOSIZE);
-    cvMoveWindow( window, 0, 0);
+    const char *fileImg = getFilename(argn,argv,1,"../data/test.png");
 
-    cvShowImage(window, img);
+    IplImage *img = loadAndShowImage(fileImg,CV_LOAD_IMAGE_UNCHANGED,window,0,0);
 
     std::cout << "press any key while image window has focus." << std::endl;
     const int durationInMilliSeconds = 0;
     int key = cvWaitKey( durationInMilliSeconds );
     std::cout << "received key code " << key << std::endl;
+
 
     cvReleaseImage(&img);
     cvDestroyWindow(window);
