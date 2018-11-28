@@ -3,10 +3,11 @@
 #include <opencv2/viz/vizcore.hpp>
 
 
-int main (  ) {
+int main ( int argn, char *argv[]  ) {
     std::cout << std::endl << "Hi this is " << __FILE__ << "." << std::endl;
 
-    // Load image in same format as stored 
+    
+    // Load image in same format as stored
     const char *fileIn = "../data/test.png";
     const int colorMode = CV_LOAD_IMAGE_UNCHANGED;
     IplImage *img = cvLoadImage( fileIn, colorMode);
