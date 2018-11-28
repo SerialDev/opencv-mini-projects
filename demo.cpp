@@ -1,3 +1,4 @@
+
 #include <opencv2/core/core.hpp>
 #include <opencv2/opencv.hpp>
 #include <opencv2/viz/vizcore.hpp>
@@ -29,6 +30,19 @@ const char *getFilename (int argn, char *arg[], const int  ix, const char *file)
     }
 }
 
+void saveModImage(const char *fileIn, IplImage img){
+    const unsigned maxFileOut = 1024;
+    char fileOut[maxFileOut];
+    sprintf(fileOut,"%s_out.jpg",fileIn);
+
+    int errorCode = 0;
+    if ( cvSaveImage( fileOut, &img ) != 1) {
+        std::cerr << "Error: while writing image: " << fileOut << std::endl;
+        errorCode = 1;
+    } else {
+        std::cout << "wrote image to " << fileOut << std::endl;
+    }
+}
 
 int main ( int argn, char *argv[]  ) {
     std::cout << std::endl << "Hi this is " << __FILE__ << "." << std::endl;
@@ -36,6 +50,7 @@ int main ( int argn, char *argv[]  ) {
     const char *fileImg = getFilename(argn,argv,1,"../data/test.png");
 
     IplImage *img = loadAndShowImage(fileImg,CV_LOAD_IMAGE_UNCHANGED,window,0,0);
+    // IplImage *img = loadAndShowImage(fileImg,CV_LOAD_IMAGE_GRAYSCALE,window,0,0);
 
     std::cout << "press any key while image window has focus." << std::endl;
     const int durationInMilliSeconds = 0;
@@ -43,8 +58,13 @@ int main ( int argn, char *argv[]  ) {
     std::cout << "received key code " << key << std::endl;
 
 
+    saveModImage("test",*img);
+
+    //release memory
     cvReleaseImage(&img);
     cvDestroyWindow(window);
+    cvDestroyAllWindows();
+
     std::cout << "completed" << __FILE__ << std::endl;
     return 0;
  }
