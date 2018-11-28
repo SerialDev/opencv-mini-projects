@@ -30,18 +30,42 @@ const char *getFilename (int argn, char *arg[], const int  ix, const char *file)
     }
 }
 
-void saveModImage(const char *fileIn, IplImage img){
+void saveModImage(const char *fileIn, IplImage *img){
     const unsigned maxFileOut = 1024;
     char fileOut[maxFileOut];
     sprintf(fileOut,"%s_out.jpg",fileIn);
 
     int errorCode = 0;
-    if ( cvSaveImage( fileOut, &img ) != 1) {
+    if ( cvSaveImage( fileOut, img ) != 1) {
         std::cerr << "Error: while writing image: " << fileOut << std::endl;
         errorCode = 1;
     } else {
         std::cout << "wrote image to " << fileOut << std::endl;
     }
+}
+
+IplImage *convertImage(IplImage *img ){
+    std::cout << "showing image with 3-channels..." << std::endl;
+
+    // create an image of the same size and depth  but only one channel
+    const int tx = 0.1 * img->width;
+    const int ty = 0.1 * img->height;
+
+    cvSetImageROI(img, cvRect( tx,ty, 8*tx, 8*ty));
+    IplImage *imgGray = cvCreateImage(cvGetSize(img),img->depth,1);
+
+    // convert color image to grayscale
+    const int conversionMode = CV_RGB2GRAY;
+    cvCvtColor(img, imgGray, conversionMode);
+    cvResetImageROI(img);
+
+    // create a window and show grayscale image
+    const char *window2 = "grayscale";
+    cvNamedWindow(window2, CV_WINDOW_AUTOSIZE);
+    cvMoveWindow( window2, 450, 0);
+    cvShowImage( window2, imgGray );
+    std::cout << "showing image in grayscale..." << std::endl;
+
 }
 
 int main ( int argn, char *argv[]  ) {
@@ -52,16 +76,23 @@ int main ( int argn, char *argv[]  ) {
     IplImage *img = loadAndShowImage(fileImg,CV_LOAD_IMAGE_UNCHANGED,window,0,0);
     // IplImage *img = loadAndShowImage(fileImg,CV_LOAD_IMAGE_GRAYSCALE,window,0,0);
 
+
+    std::cout << "read in image from: " << fileImg << std::endl;
+
+
+    IplImage *imgGray = convertImage( img );
+
     std::cout << "press any key while image window has focus." << std::endl;
     const int durationInMilliSeconds = 0;
     int key = cvWaitKey( durationInMilliSeconds );
     std::cout << "received key code " << key << std::endl;
 
 
-    saveModImage("test",*img);
+    saveModImage("test",img);
 
     //release memory
     cvReleaseImage(&img);
+    // cvReleaseImage(&imgGray);
     cvDestroyWindow(window);
     cvDestroyAllWindows();
 
