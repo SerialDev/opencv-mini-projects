@@ -7,7 +7,7 @@ int main (  ) {
     std::cout << std::endl << "Hi this is " << __FILE__ << "." << std::endl;
 
     // Load image in same format as stored 
-    const char *fileIn = "/mnt/personal/training-langs/cpp-learn/test.png";
+    const char *fileIn = "../data/test.png";
     const int colorMode = CV_LOAD_IMAGE_UNCHANGED;
     IplImage *img = cvLoadImage( fileIn, colorMode);
     if(img == 0) {
